@@ -22,6 +22,8 @@ class GameHandle:
         self.to_win = 0
         self.choice = "bat"
         self.toss_won = None
+        self.player_list = []
+        self.computer_list = []
 
     def toss(self, choice, img, lm_list):
 
@@ -98,12 +100,16 @@ class GameHandle:
 
             return img, start
 
-    def game_seq(self, img, lm_list, p_choice, c_choice, toss_won):
+    def game_seq(self, img, lm_list, p_choice, c_choice, toss_won, player_list, computer_list):
         self.toss_won = toss_won
+        self.player_list = player_list
+        self.computer_list = computer_list
         winner = None
         start = 5
+        out = False
 
         img = sm.game_seq_display(img, p_choice=p_choice, c_choice=c_choice,
+                                  player_list=self.player_list, computer_list=self.computer_list,
                                   toss_won=self.toss_won, total=self.total, to_win=self.to_win,
                                   com_num=self.com_num, inn=self.inn)
 
@@ -118,14 +124,17 @@ class GameHandle:
                 rev_dict = dict(zip(self.num_dict.values(), self.num_dict.keys()))
                 max_key = max(list(rev_dict.keys()))
                 self.user_num = rev_dict[max_key]
-                print(self.user_num, self.com_num)
+
+                self.player_list.append(self.user_num)
+                self.computer_list.append(self.com_num)
+
                 self.toss_won = None
 
                 self.num_dict = {}
 
                 if self.user_num == self.com_num:
                     # change the field
-                    p_choice, c_choice = self.game_change(p_choice, c_choice)
+                    p_choice, c_choice, start, out = self.game_change(p_choice, c_choice)
                     self.user_num = 0
                     self.com_num = 0
 
@@ -193,10 +202,11 @@ class GameHandle:
                 cv2.putText(img, "Wait", (250, 230), cv2.FONT_HERSHEY_DUPLEX, 3, (15, 125, 220), 2)
                 self.total_time = self.past_time = 0
 
-        return img, start, winner, p_choice, c_choice, self.toss_won
+        return img, start, winner, p_choice, c_choice, self.toss_won, self.to_win, self.player_list, self.computer_list, out
 
     def game_change(self, p_choice, c_choice):
-
+        start = 5
+        out = False
         if self.inn < 2:
             if p_choice == "bat":
                 p_choice = "bowl"
@@ -206,6 +216,9 @@ class GameHandle:
                 c_choice = "bowl"
             self.to_win = self.total
             self.total = 0
+            start = 6
+            out = True
+
         self.inn += 1
 
-        return p_choice, c_choice
+        return p_choice, c_choice, start, out

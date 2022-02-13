@@ -210,35 +210,69 @@ class ShowMenu:
             start = 5
         return start, p_choice, c_choice
 
-    def game_over(self, img, lm_list, winner):
+    def game_over(self, img, lm_list, p_choice, to_win, player_list=None, computer_list=None, out=False, winner=None, total=0):
         start = 6
-        if winner == "Draw":
-            cv2.rectangle(img, (210, 50), (450, 100), (225, 250, 225), -1)
-            cv2.putText(img, "Match Draw", (230, 80), cv2.FONT_ITALIC, 1, (15, 250, 200), 3)
-        else:
-            cv2.rectangle(img, (210, 50), (450, 100), (225, 250, 225), -1)
-            cv2.putText(img, str(winner) + ' Wins', (230, 80), cv2.FONT_ITALIC, 1, (15, 250, 200), 3)
 
-        cv2.rectangle(img, (230, 200), (400, 250), self.cont_color, -1)
-        cv2.putText(img, "Continue", (245, 230), cv2.FONT_ITALIC, 1, (115, 20, 20), 3)
+        img = score_track(img, player_list, computer_list)
+
+        if out:
+            if p_choice == "bat":
+                tex = f"Computer: {to_win} runs"
+            else:
+                tex = f"Player: {to_win} runs"
+
+            cv2.putText(img, "Out", (270, 135), cv2.FONT_ITALIC, 1, (0, 0, 255), 3)
+            cv2.putText(img, tex, (190, 180), cv2.FONT_HERSHEY_DUPLEX, 1, (150, 25, 200), 1)
+            cv2.putText(img, f"To Win: {to_win + 1} runs", (190, 210), cv2.FONT_HERSHEY_DUPLEX, 1, (150, 25, 240), 1)
+
+        else:
+            if winner == "Draw":
+                cv2.rectangle(img, (210, 120), (450, 180), (225, 250, 225), -1)
+                cv2.putText(img, "Match Draw", (230, 150), cv2.FONT_ITALIC, 1, (15, 250, 200), 3)
+            else:
+                cv2.rectangle(img, (210, 120), (450, 180), (225, 250, 225), -1)
+                cv2.putText(img, str(winner) + ' Wins', (230, 160), cv2.FONT_ITALIC, 1, (15, 250, 200), 3)
+
+        cv2.rectangle(img, (230, 250), (400, 300), self.cont_color, -1)
+        cv2.putText(img, "Continue", (245, 275), cv2.FONT_ITALIC, 1, (115, 20, 20), 3)
 
         is_cont = pg.continue_gesture(lm_list=lm_list)
 
         if is_cont:
-            self.cont_color, self.itime, self.total_time, self.past_time, start = menu_helper(self.cont_color,
-                                                                                              (50, 255, 25),
-                                                                                              self.itime,
-                                                                                              self.total_time,
-                                                                                              self.past_time, start, 0)
+            if out:
+                self.cont_color, self.itime, self.total_time, self.past_time, start = menu_helper(self.cont_color,
+                                                                                                  (50, 255, 25),
+                                                                                                  self.itime,
+                                                                                                  self.total_time,
+                                                                                                  self.past_time,
+                                                                                                  start, 5)
+                if start == 5:
+                    player_list = []
+                    computer_list = []
+
+            else:
+                self.cont_color, self.itime, self.total_time, self.past_time, start = menu_helper(self.cont_color,
+                                                                                                  (50, 255, 25),
+                                                                                                  self.itime,
+                                                                                                  self.total_time,
+                                                                                                  self.past_time,
+                                                                                                  start, 0)
+                if start == 0:
+                    player_list = []
+                    computer_list = []
+
         else:
             self.itime = 0
             self.total_time = 0
             self.cont_color = (50, 255, 25)
 
-        return img, start
+        return img, start, player_list, computer_list
 
     @staticmethod
-    def game_seq_display(img, p_choice, c_choice, inn, com_num, total, toss_won, to_win=None):
+    def game_seq_display(img, p_choice, c_choice, player_list, computer_list, inn, com_num, total, toss_won, to_win=None):
+
+        img = score_track(img, player_list, computer_list)
+
         if toss_won is not None:
             if toss_won == "player":
                 cv2.putText(img, f"Player won the toss and choose to {p_choice}", (100, 20), cv2.FONT_HERSHEY_SIMPLEX,
@@ -265,9 +299,49 @@ class ShowMenu:
             cv2.rectangle(img, (480, 240), (560, 280), (127, 135, 148), -1)
             cv2.rectangle(img, (560, 240), (650, 280), (255, 255, 255), -1)
             cv2.putText(img, "To Win", (480, 270), cv2.FONT_HERSHEY_DUPLEX, 0.75, (215, 255, 120), 2)
-            cv2.putText(img, str(to_win), (565, 270), cv2.FONT_ITALIC, 0.75, (0, 25, 10), 1)
+            cv2.putText(img, str(to_win+1), (565, 270), cv2.FONT_ITALIC, 0.75, (0, 25, 10), 1)
 
-        if com_num:
+        if com_num >= 0:
             cv2.putText(img, str(com_num), (304, 291), cv2.FONT_HERSHEY_DUPLEX, 2, (15, 225, 220), 2)
 
         return img
+
+
+def score_track(img, p_score_list, c_score_list):
+
+    if len(p_score_list) == 0:
+        pass
+
+    if len(p_score_list) > 0:
+        cv2.rectangle(img, (330, 25), (400, 90), (216, 213, 224), -1)
+        cv2.putText(img, str(p_score_list[-1]), (355, 65), cv2.FONT_HERSHEY_TRIPLEX, 1.2, (0, 0, 0), 2)
+
+        cv2.rectangle(img, (410, 30), (470, 85), (216, 213, 224), -1)
+
+        cv2.rectangle(img, (330, 385), (400, 450), (216, 213, 224), -1)
+        cv2.putText(img, str(c_score_list[-1]), (355, 425), cv2.FONT_HERSHEY_TRIPLEX, 1.2, (0, 0, 0), 2)
+
+        cv2.rectangle(img, (410, 390), (470, 445), (216, 213, 224), -1)
+
+    if len(p_score_list) > 1:
+        cv2.rectangle(img, (260, 30), (320, 85), (216, 213, 224), -1)
+        cv2.putText(img, str(p_score_list[-2]), (280, 65), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (0, 0, 0), 2)
+
+        cv2.rectangle(img, (260, 390), (320, 445), (216, 213, 224), -1)
+        cv2.putText(img, str(c_score_list[-2]), (280, 425), cv2.FONT_HERSHEY_TRIPLEX, 1.0, (0, 0, 0), 2)
+
+    if len(p_score_list) > 2:
+        cv2.rectangle(img, (200, 35), (250, 80), (216, 213, 224), -1)
+        cv2.putText(img, str(p_score_list[-3]), (220, 65), cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0), 2)
+
+        cv2.rectangle(img, (200, 395), (250, 440), (216, 213, 224), -1)
+        cv2.putText(img, str(p_score_list[-3]), (220, 425), cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0), 2)
+
+    if len(p_score_list) > 3:
+        cv2.rectangle(img, (150, 40), (190, 75), (216, 213, 224), -1)
+        cv2.putText(img, str(p_score_list[-4]), (165, 65), cv2.FONT_HERSHEY_TRIPLEX, 0.6, (0, 0, 0), 2)
+
+        cv2.rectangle(img, (150, 400), (190, 435), (216, 213, 224), -1)
+        cv2.putText(img, str(p_score_list[-4]), (165, 425), cv2.FONT_HERSHEY_TRIPLEX, 0.6, (0, 0, 0), 2)
+
+    return img

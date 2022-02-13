@@ -47,19 +47,27 @@ class PredictGestures:
                 num = 4
                 print("Four")
 
-            elif lm_list[8][2] < lm_list[5][2] and lm_list[12][2] < lm_list[9][2] \
-                    and lm_list[16][2] < lm_list[13][2] and lm_list[20][2] < lm_list[17][2] \
+            elif lm_list[8][2] < lm_list[5][2] and lm_list[12][2] < lm_list[9][2] and\
+                    lm_list[16][2] < lm_list[13][2] and lm_list[20][2] < lm_list[17][2] \
                     and lm_list[4][1] > lm_list[5][1]:
 
                 cv2.putText(img, "Five", (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 100, 100), 3)
                 num = 5
                 print("Five")
 
-            elif lm_list[3][2] < lm_list[5][2]:
+            elif lm_list[4][2] < lm_list[5][2] and lm_list[4][2] < lm_list[3][2]:
 
                 cv2.putText(img, "Six", (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 100, 100), 3)
                 num = 6
                 print("Six")
+
+            elif (lm_list[5][2] < lm_list[6][2] and lm_list[9][2] < lm_list[10][2] and
+                  lm_list[13][2] < lm_list[14][2] and lm_list[17][2] < lm_list[18][2]) or\
+                 (lm_list[5][2] < lm_list[9][2] < lm_list[13][2]):
+
+                cv2.putText(img, "Zero", (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 100, 100), 3)
+                num = 0
+                print("Zero")
 
             else:
 
@@ -130,7 +138,7 @@ class PredictGestures:
 
         if len(lm_list) != 0:
 
-            if (200 <= lm_list[8][2] <= 250 and 200 <= lm_list[12][2] <= 250) and \
+            if (250 <= lm_list[8][2] <= 300 and 250 <= lm_list[12][2] <= 300) and \
                     (230 <= lm_list[8][1] <= 400 and 230 <= lm_list[12][1] <= 400):
 
                 return True
