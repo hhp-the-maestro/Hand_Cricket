@@ -67,7 +67,8 @@ class GameHandle:
                     self.user_num = rev_dict[max_key]
                     self.com_num = np.random.randint(0, 7)
 
-                    print(self.user_num, self.com_num)
+                    # print(self.user_num, self.com_num)
+                    # cv2.putText(img, str(self.com_num), (304, 291), cv2.FONT_HERSHEY_DUPLEX, 1, (15, 25, 220), 2)
 
                     toss_num = self.user_num + self.com_num
 

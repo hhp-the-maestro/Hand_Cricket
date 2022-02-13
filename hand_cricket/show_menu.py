@@ -335,13 +335,13 @@ def score_track(img, p_score_list, c_score_list):
         cv2.putText(img, str(p_score_list[-3]), (220, 65), cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0), 2)
 
         cv2.rectangle(img, (200, 395), (250, 440), (216, 213, 224), -1)
-        cv2.putText(img, str(p_score_list[-3]), (220, 425), cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0), 2)
+        cv2.putText(img, str(c_score_list[-3]), (220, 425), cv2.FONT_HERSHEY_TRIPLEX, 0.8, (0, 0, 0), 2)
 
     if len(p_score_list) > 3:
         cv2.rectangle(img, (150, 40), (190, 75), (216, 213, 224), -1)
         cv2.putText(img, str(p_score_list[-4]), (165, 65), cv2.FONT_HERSHEY_TRIPLEX, 0.6, (0, 0, 0), 2)
 
         cv2.rectangle(img, (150, 400), (190, 435), (216, 213, 224), -1)
-        cv2.putText(img, str(p_score_list[-4]), (165, 425), cv2.FONT_HERSHEY_TRIPLEX, 0.6, (0, 0, 0), 2)
+        cv2.putText(img, str(c_score_list[-4]), (165, 425), cv2.FONT_HERSHEY_TRIPLEX, 0.6, (0, 0, 0), 2)
 
     return img
